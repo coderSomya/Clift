@@ -2,7 +2,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
+  canvas.width = 0.2*window.innerWidth;
   canvas.height = window.innerHeight;
 }
 
@@ -19,3 +19,11 @@ function update(){
 }
 
 update();
+
+var btn3 = document.getElementById("btn3");
+btn3.addEventListener("click",()=>{
+  console.log(lift);
+  console.log("btn3 clicked");
+  lift.box.waiting_queues[3].push(1);
+  console.log(lift.waiting_queues);
+})

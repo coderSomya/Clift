@@ -5,12 +5,9 @@ class Lift{
         this.box = new Box;
         this.height = height;
         this.floors = floors;
-        this.waiting_queues = [[], [], [], [], [], []];
         this.order = [];
         this.width = width;
     }
-
-
 
 
     async draw(ctx){
@@ -20,25 +17,12 @@ class Lift{
 
     }
 
-
-
-    pickup(people){
-        while(people.length > 0 && this.box.size<this.box.capacity){
-            this.box.push(people[0]);
-            people.splice(0, 1);
-        }
-
-        return people;
+    new_request(person){
+        let src = Number(person.src);
+        let dest = Number(person.dest);
+        this.box.waiting_queues[src].push(dest);
     }
 
-    drop(people){
-        for(let i=0; i<people.length; i++){
-            this.box = this.box.filter(person => person!=people[i]);
-        }
-    }
 
-    calculate_order(){
-
-    }
 
 }
