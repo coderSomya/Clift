@@ -11,13 +11,12 @@ class Box {
         this.capacity = capacity;
         this.top_limit = top_limit;
         this.bottom_limit = bottom_limit;
-        this.direction = 1;
         this.orders = [];
         this.is_moving = false;
         this.current_dest = -1;
     }
 
-    start(){
+    restart(){
         if(this.current_dest==-1){
             return;
         }
@@ -58,32 +57,11 @@ class Box {
         //STRATEGY
         console.log("this ka y", this.y);
 
-        if(!this.is_moving){
-            //calculate where it should go to pickup the first guy
-            let take_from=-1;
-            for(let i=0; i<this.waiting_queues.length; i++){
-                let waiting_queue = this.waiting_queues[i];
-
-                if(waiting_queue.length > 0){
-                    take_from = i;
-                }
-            }
-            if(take_from!=-1){
-                this.current_dest = take_from;
-                this.is_moving = true;
-                this.velocity = this.y/100 < this.current_dest ? this.MAX_VELOCITY : -this.MAX_VELOCITY;
-            }
-        }
-
-
-
-
         //currently calculating it naively
-        console.log("here atleast with velo", this.velocity);
+
+
         this.y+=this.velocity;
-
-        // console.log("box ki positon", this.y);
-
+        
         ctx.strokeStyle = 'black';
         
         ctx.lineWidth = 5; 
@@ -119,7 +97,7 @@ class Box {
 
             //simulating dropping time here
             await new Promise(r => setTimeout(r, 1500));
-            this.start();
+            this.restart();
         }
 
 
