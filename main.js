@@ -25,5 +25,5 @@ btn3.addEventListener("click",()=>{
   console.log(lift);
   console.log("btn3 clicked");
   lift.box.waiting_queues[3].push(1);
-  console.log(lift.waiting_queues);
+  console.log(lift.box.waiting_queues);
 })

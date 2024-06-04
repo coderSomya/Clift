@@ -3,9 +3,9 @@ class Box {
     constructor(width = 150, height = 150, top_limit=-10, bottom_limit=500, velocity = 1, capacity = 6){
         this.width = width;
         this.height = height;
-        this.people_inside = [];
+        this.people_inside = [new People(2,5)];
         this.waiting_queues = [[], [], [], [], [], []];
-        this.y = 0;
+        this.y = -1;
         this.velocity = velocity;
         this.MAX_VELOCITY = velocity;
         this.capacity = capacity;
@@ -14,14 +14,19 @@ class Box {
         this.direction = 1;
         this.orders = [];
         this.is_moving = false;
+        this.current_dest = -1;
     }
 
     start(){
+        if(this.current_dest==-1){
+            return;
+        }
         this.is_moving = true;
-        this.velocity = this.y>=this.bottom_limit ? -this.MAX_VELOCITY : this.MAX_VELOCITY;
+        this.velocity = this.y>=this.current_dest ? -this.MAX_VELOCITY : this.MAX_VELOCITY;
     }
 
     stop(){
+        this.current_dest =-1;
         this.velocity = 0;
         this.is_moving = false;
     }
@@ -35,61 +40,46 @@ class Box {
             people.splice(0, 1);
         }
 
+        if(this.people_inside.length>0){    
+            this.current_dest = this.people_inside[0].dest;
+            this.velocity = this.y/100 < this.current_dest ? this.MAX_VELOCITY : -this.MAX_VELOCITY;
+        }
+
         return people;
     }
 
     drop(current_floor){
-        for(let i=0; i<this.people_inside.length; i++){
-            if(Number(people_inside[i].dest) == Number(current_floor)){
-                people_inside= this.people_inside.splice(i, 1);
-            }
-        }
+        console.log("trying to drop people at ", current_floor);
+        this.people_inside = this.people_inside.filter((person)=> person.dest != current_floor);
     }
 
     async draw(ctx){
-        this.velocity = 0;
-        if(this.people_inside.length!=0){
-            this.velocity = this.MAX_VELOCITY;
-        }
 
-        for(let i=0; i<this.waiting_queues.length; i++){
-            let waiting_queue = this.waiting_queues[i];
+        //STRATEGY
+        console.log("this ka y", this.y);
 
-            if(waiting_queue.length!=0){
-                this.velocity = this.MAX_VELOCITY;
-            }
-        }
-
-        //calculate which direction it should go
         if(!this.is_moving){
-            if(this.people_inside.length!=0){
-                let person = this.people_inside[0]; 
-                //go drop him first
-                console.log("inside dropping", person);
-                this.is_moving = true;
-                this.velocity = this.y > person.dest ? -this.MAX_VELOCITY : this.MAX_VELOCITY;
-            }
-            else{
-                for(let i=0; i<this.waiting_queues.length; i++){
-                    let waiting_queue = this.waiting_queues[i];
-                    if(waiting_queue.length!=0){
-                        console.log("inside waiign qq", i, waiting_queue);
-                        this.velocity = this.y > i ? -this.MAX_VELOCITY: this.MAX_VELOCITY;
-                        this.is_moving = true;
-                    }
+            //calculate where it should go to pickup the first guy
+            let take_from=-1;
+            for(let i=0; i<this.waiting_queues.length; i++){
+                let waiting_queue = this.waiting_queues[i];
+
+                if(waiting_queue.length > 0){
+                    take_from = i;
                 }
             }
+            if(take_from!=-1){
+                this.current_dest = take_from;
+                this.is_moving = true;
+                this.velocity = this.y/100 < this.current_dest ? this.MAX_VELOCITY : -this.MAX_VELOCITY;
+            }
         }
 
-        if(this.y <= this.top_limit){
-            this.direction = this.MAX_VELOCITY;
-        }
-        if(this.y>= this.bottom_limit){
-            this.velocity = -this.MAX_VELOCITY;
-        }
+
 
 
         //currently calculating it naively
+        console.log("here atleast with velo", this.velocity);
         this.y+=this.velocity;
 
         // console.log("box ki positon", this.y);
@@ -98,6 +88,11 @@ class Box {
         
         ctx.lineWidth = 5; 
         ctx.strokeRect(20, this.y, this.width, this.height);
+
+        for(let i=0; i<this.people_inside.length; i++){
+            let person = this.people_inside[i];
+            person.draw(ctx, 20, this.y, this.width/3, this.height/3);
+        }
         
         if(this.y%100 == 0){
             let current_floor = this.y/100;
@@ -109,6 +104,17 @@ class Box {
             //todo -> check if we can pickup someone
          
             this.waiting_queues[current_floor] = this.pickup(current_floor, this.waiting_queues[current_floor]);
+
+            let should_keep_moving = false; 
+            for(let i = 0; i < this.waiting_queues.length; i++){
+                if(this.waiting_queues[i].length>0) should_keep_moving = true;
+            }
+            
+            should_keep_moving = should_keep_moving || (this.people_inside.length>0);
+
+            if(!should_keep_moving) {
+               this.stop();
+            }
 
 
             //simulating dropping time here
