@@ -22,8 +22,10 @@ update();
 
 var btn3 = document.getElementById("btn3");
 btn3.addEventListener("click",()=>{
-  console.log(lift);
-  console.log("btn3 clicked");
-  lift.box.waiting_queues[3].push(new Person(3,5));
-  console.log(lift.box.waiting_queues);
+  lift.box.waiting_queues[3].push(new People(3,5));
+  console.log("added to wq", lift.box.waiting_queues)
+})
+
+var test = document.getElementById("test");
+test.addEventListener('click', ()=>{
 })

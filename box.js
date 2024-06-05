@@ -1,9 +1,9 @@
 class Box {
 
-    constructor(width = 150, height = 150, top_limit=-10, bottom_limit=500, velocity = 1, capacity = 6){
+    constructor(width = 150, height = 60, top_limit=-10, bottom_limit=500, velocity = 1, capacity = 6){
         this.width = width;
         this.height = height;
-        this.people_inside = [new People(2,5, true)];
+        this.people_inside = [new People(2,5, true), new People(3, 2, true)];
         this.waiting_queues = [[], [], [], [], [], []];
         //this will be an array or array of people
         this.y = -1;
@@ -18,23 +18,18 @@ class Box {
     }
 
     restart(){
-        if(this.current_dest==-1){
-            return;
-        }
         this.is_moving = true;
         this.velocity = this.y>=this.current_dest ? -this.MAX_VELOCITY : this.MAX_VELOCITY;
     }
 
     stop(){
-        this.current_dest =-1;
         this.velocity = 0;
         this.is_moving = false;
     }
 
-    pickup(from, people){
-        console.log("trying to pick up ", people, " from ", from, "floor");
+    pickup(people){
 
-        while(people.length > 0 && this.people_inside.size<this.capacity){
+        while(people.length > 0 && this.people_inside.length<this.capacity){
             people[0].is_inside = true;
             this.people_inside.push(people[0]);
             people.splice(0, 1);
@@ -44,7 +39,6 @@ class Box {
     }
 
     drop(current_floor){
-        console.log("trying to drop people at ", current_floor);
         for(let i=0; i<this.people_inside.length; i++){
             if(this.people_inside[i].dest == current_floor){
                 this.people_inside[i].is_inside = false;
@@ -70,7 +64,8 @@ class Box {
             let current_floor = this.y/100;
             this.drop(this.y/100);
 
-            this.waiting_queues[current_floor] = this.pickup(current_floor, this.waiting_queues[current_floor]);
+            this.waiting_queues[current_floor] = this.pickup(this.waiting_queues[current_floor]);
+ 
 
             let should_keep_moving = false; 
             for(let i = 0; i < this.waiting_queues.length; i++){
@@ -78,13 +73,11 @@ class Box {
             }
             
             should_keep_moving = should_keep_moving || (this.people_inside.length>0);
-            console.log("shud be moving", should_keep_moving);
             if(!should_keep_moving) {
                 this.stop();
             }
             else{
                 let people = this.calculate_order();
-                console.log("bestie", people[0]);
 
                 let first_to_cater = people[0];
                 if(first_to_cater.is_inside){
@@ -108,7 +101,7 @@ class Box {
 
         for(let i=0; i<this.people_inside.length; i++){
             let person = this.people_inside[i];
-            person.draw(ctx, 20, this.y, this.width/3, this.height/3);
+            person.draw(ctx, 20+this.width/3*(i%3), this.y+ (Math.floor(i/3))*(this.height/2), this.width/3, this.height/2);
         }
         
         if(this.y%100 == 0){
@@ -121,7 +114,6 @@ class Box {
 
     calculate_order(){
         // console.log("box ",this);
-        console.log("calculating order at floor", this.y/100);
 
         // console.log("wating here", this.waiting_queues[this.y/100]);
         // console.log("inside", this.people_inside);
