@@ -7,6 +7,7 @@ body{
 
 .container{
     display: flex;
+    justify-content: center;
 }
 
 .row{
@@ -26,7 +27,7 @@ body{
     color: black;
 }
 
-#btn0{
+/* #btn0{
     background-color: red;
     color:white;
 }
@@ -49,4 +50,27 @@ body{
 #btn5{
     background-color: orange;
     color:white;
-}
+} */
+
+.transport {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    border: 1px solid #000;
+  }
+  .child-div {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+  .child-button {
+    border-radius: 50%;
+    padding: 10px;
+    transition: transform 0.2s;
+  }
+  .child-button:hover{
+    scale: 1.2;
+    background-color: rgb(62, 61, 61);
+    color: white;
+  }
