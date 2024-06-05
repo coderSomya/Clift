@@ -24,6 +24,6 @@ var btn3 = document.getElementById("btn3");
 btn3.addEventListener("click",()=>{
   console.log(lift);
   console.log("btn3 clicked");
-  lift.box.waiting_queues[3].push(1);
+  lift.box.waiting_queues[3].push(new Person(3,5));
   console.log(lift.box.waiting_queues);
 })

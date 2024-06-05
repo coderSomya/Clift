@@ -1,10 +1,13 @@
 class People {
-    constructor(src, dest){
+    constructor(src, dest, is_inside = false){
         this.src = src;
         this.dest = dest;
+        this.is_inside = is_inside;
     }
 
     draw(ctx, x,y, width, height){
+
+        if(!this.is_inside) return;
         ctx.strokeStyle = 'black';
         
         ctx.lineWidth = 1; 
